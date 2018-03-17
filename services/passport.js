@@ -7,31 +7,31 @@ const User = mongoose.model("users");
 
 //add login user info to cookie
 passport.serializeUser((user, done) => {
-	done(null, user.id);
+  done(null, user.id);
 });
 
 //call id from cookie
 passport.deserializeUser((id, done) => {
-	User.findById(id).then(user => done(null, user));
+  User.findById(id).then(user => done(null, user));
 });
 passport.use(
-	new GoogleStrategy(
-		{
-			clientID: keys.googleClientID,
-			clientSecret: keys.googleClientSecret,
-			callbackURL: "/auth/google/callback",
-			proxy: true
-		},
-		async (accessToken, refreshToken, profile, done) => {
-			const existingUser = await User.findOne({ googleId: profile.id });
+  new GoogleStrategy(
+    {
+      clientID: keys.googleClientID,
+      clientSecret: keys.googleClientSecret,
+      callbackURL: "/auth/google/callback",
+      proxy: true
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      const existingUser = await User.findOne({ googleId: profile.id });
 
-			if (existingUser) {
-				// the user is already register
-				done(null, existingUser);
-			} else {
-				const user = await new User({ googleId: profile.id }).save();
-				done(null, user);
-			}
-		}
-	)
+      if (existingUser) {
+        // the user is already register
+        done(null, existingUser);
+      } else {
+        const user = await new User({ googleId: profile.id }).save();
+        done(null, user);
+      }
+    }
+  )
 );
